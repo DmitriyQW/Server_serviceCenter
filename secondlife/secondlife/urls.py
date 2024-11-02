@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from serviceCenter.views import index,pricelist
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('',index), #Главная страница google
+    path('pricelist/',pricelist),#127.0.0.1:8000/pricelist
 ]
