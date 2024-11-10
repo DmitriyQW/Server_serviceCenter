@@ -15,12 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from serviceCenter.views import index,pricelist #Импорт функций ответа на запрос
+from django.urls import path,include
+from serviceCenter import views #Импорт функций ответа на запрос
 
 #Обработка адресов
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',index), #Главная страница сервисного центра
-    path('pricelist/',pricelist),#127.0.0.1:8000/pricelist
+    path('',include("serviceCenter.urls")),
+
+    #http://127.0.0.1:8000/secondlife/pricelist/
+    #Главная страница сервисного центра
 ]
