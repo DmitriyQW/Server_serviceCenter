@@ -45,10 +45,10 @@ class Manufacturer_applic(models.Model):
 
 class Application(models.Model):
     id_application = models.AutoField(primary_key=True)
-    id_user_applic = models.ForeignKey(User, on_delete=models.CASCADE) #Вторичный ключ Класс,Что при удолении
-    id_state_applic = models.ForeignKey(State_applic, on_delete=models.CASCADE)  # f
-    id_type_applic = models.ForeignKey(Type_applic, on_delete=models.CASCADE)
-    id_manufacturer_applic = models.ForeignKey(Manufacturer_applic,on_delete=models.CASCADE)
+    id_user_applic = models.ForeignKey(User, on_delete=models.PROTECT) #Вторичный ключ Класс,Что при удолении
+    id_state_applic = models.ForeignKey(State_applic, on_delete=models.PROTECT)  # f
+    id_type_applic = models.ForeignKey(Type_applic, on_delete=models.PROTECT)
+    id_manufacturer_applic = models.ForeignKey(Manufacturer_applic,on_delete=models.PROTECT)
     photo_applic = models.CharField(max_length=45)
     reason_applic = models.CharField(max_length=45)
     history_applic = models.CharField(max_length=45)
@@ -84,20 +84,20 @@ class Feedbackcol_number(models.Model):
 
 class Feedback(models.Model):
     id_feedback = models.AutoField(primary_key=True)
-    id_user = models.ForeignKey(User,on_delete=models.CASCADE)
-    id_feedbackcol_number = models.ForeignKey(Feedbackcol_number,on_delete=models.CASCADE)
+    id_user = models.ForeignKey(User,on_delete=models.PROTECT)
+    id_feedbackcol_number = models.ForeignKey(Feedbackcol_number,on_delete=models.PROTECT)
     description_service = models.CharField(max_length=45)
 
 class Publications(models.Model):
     id_publ = models.AutoField(primary_key=True)
-    id_worker_public = models.ForeignKey(Worker,on_delete=models.CASCADE)
+    id_worker_public = models.ForeignKey(Worker,on_delete=models.PROTECT)
     photo_publ = models.CharField(max_length=45)
     description_publ = models.CharField(max_length=45)
     source_public = models.CharField(max_length=45)
 
 class Chat(models.Model):
     id_chat = models.AutoField(primary_key=True)
-    master_chat = models.ForeignKey(Worker,on_delete=models.CASCADE)
-    user_chat = models.ForeignKey(User,on_delete=models.CASCADE)
+    master_chat = models.ForeignKey(Worker,on_delete=models.PROTECT)
+    user_chat = models.ForeignKey(User,on_delete=models.PROTECT)
     date_chat = models.DateTimeField()
     message_chat = models.TextField()
