@@ -2,8 +2,9 @@ from django.db import models
 from django.core.validators import MaxValueValidator #Валидация
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password #Хеширования пароля
-# Create your models here.
 
+
+#Определение моделей - они же таблицы, поля, связи
 class Worker(models.Model):
     id_worker = models.AutoField(primary_key=True)
     login_worker = models.CharField(max_length=8)
@@ -18,6 +19,7 @@ class Worker(models.Model):
     [MaxValueValidator(100)]) #Валидация максимальный возврат 100 лет
     dateregister_worker = models.DateTimeField(default=timezone.now)
 
+    # Определение функции вывода информации строки
     def __str__(self):
         return f"{self.id_worker} ({self.fio_worker})" # Возвращение id и Фио мастера
 

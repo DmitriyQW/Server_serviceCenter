@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'serviceCenter.apps.ServicecenterConfig', #Инициализация приложения
+    'serviceCenter.apps.ServicecenterConfig',#Инициализация приложения
+    'rest_framework',#Django rest
 ]
 
 MIDDLEWARE = [
