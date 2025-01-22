@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import (Worker,User,State_applic,Type_applic,
+from .models import (Worker,User,State_applic,TypeDevice_applic,
                      Manufacturer_applic,Application,PriceList,
                      Report,Feedbackcol_number,Feedback,Publications,Chat)
 
@@ -10,7 +10,7 @@ from .models import (Worker,User,State_applic,Type_applic,
 admin.site.register(Worker)
 admin.site.register(User)
 admin.site.register(State_applic)
-admin.site.register(Type_applic)
+admin.site.register(TypeDevice_applic)
 admin.site.register(Manufacturer_applic)
 admin.site.register(Application)
 admin.site.register(PriceList)

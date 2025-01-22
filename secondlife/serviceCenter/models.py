@@ -7,14 +7,14 @@ from django.contrib.auth.hashers import make_password #Хеширования п
 #Определение моделей - они же таблицы, поля, связи
 class Worker(models.Model):
     id_worker = models.AutoField(primary_key=True)
-    login_worker = models.CharField(max_length=8)
+    login_worker = models.CharField(max_length=32)
     tel_worker = models.CharField(max_length=11)
-    email_worker = models.EmailField(max_length=60)
-    password_worker = models.CharField(max_length=200) #HES
-    question_worker = models.CharField(max_length=25)
-    answer_worker = models.CharField(max_length=25)
-    fio_worker = models.CharField(max_length=60)
-    address_worker = models.CharField(max_length=60)
+    email_worker = models.EmailField(max_length=254)
+    password_worker = models.CharField(max_length=255) #HES
+    question_worker = models.CharField(max_length=100)
+    answer_worker = models.CharField(max_length=255)
+    fio_worker = models.CharField(max_length=110)
+    address_worker = models.CharField(max_length=256)
     age_worker = models.PositiveSmallIntegerField(validators=
     [MaxValueValidator(100)]) #Валидация максимальный возврат 100 лет
     dateregister_worker = models.DateTimeField(default=timezone.now)
@@ -25,14 +25,14 @@ class Worker(models.Model):
 
 class User(models.Model):
     id_user = models.AutoField(primary_key=True)
-    login_user = models.CharField(max_length=8)
+    login_user = models.CharField(max_length=32)
     tel_user = models.CharField(max_length=11)
-    email_user = models.EmailField(max_length=60)
-    password_user = models.CharField(max_length=200) #HES
-    question_user = models.CharField(max_length=25)
-    answer_user = models.CharField(max_length=25)
-    fio_user = models.CharField(max_length=60)
-    address_user = models.CharField(max_length=60)
+    email_user = models.EmailField(max_length=254)
+    password_user = models.CharField(max_length=255) #HES
+    question_user = models.CharField(max_length=100)
+    answer_user = models.CharField(max_length=255) #HES
+    fio_user = models.CharField(max_length=110)
+    address_user = models.CharField(max_length=256)#
     age_user = models.PositiveSmallIntegerField(validators=
     [MaxValueValidator(100)]) #Валидация максимальный возврат 100 лет
     dateregister_user = models.DateTimeField(default=timezone.now)
@@ -42,60 +42,65 @@ class User(models.Model):
 
 class State_applic(models.Model):
     id_state = models.AutoField(primary_key=True)
-    name_state = models.CharField(max_length=20)
+    name_state = models.CharField(max_length=100)
 
     def __str__(self):
         return f"{self.id_state}({self.name_state})"
 
-class Type_applic(models.Model):
-    id_type = models.AutoField(primary_key=True)
-    name_type = models.CharField(max_length=10)
+class TypeDevice_applic(models.Model):
+    id_typeD = models.AutoField(primary_key=True)
+    name_typeD = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.id_type}({self.name_type})"
+        return f"{self.id_typeD}({self.name_typeD})"
 
 class Manufacturer_applic(models.Model):
     id_manufacturer = models.AutoField(primary_key=True)
-    name_manufacturer = models.CharField(max_length=40)
+    name_manufacturer = models.CharField(max_length=100)
 
     def __str__(self):
         return f"{self.id_manufacturer}({self.name_manufacturer})"
 
 class Application(models.Model):
     id_application = models.AutoField(primary_key=True)
-    id_user_applic = models.ForeignKey(User, on_delete=models.PROTECT) #Вторичный ключ Класс,Что при удолении
-    id_state_applic = models.ForeignKey(State_applic, on_delete=models.PROTECT)  # f
-    id_type_applic = models.ForeignKey(Type_applic, on_delete=models.PROTECT)
-    id_manufacturer_applic = models.ForeignKey(Manufacturer_applic,on_delete=models.PROTECT)
-    photo_applic = models.CharField(max_length=45)
-    reason_applic = models.CharField(max_length=45)
-    history_applic = models.CharField(max_length=45)
-    model_applic = models.CharField(max_length=45)
-    password_applic = models.CharField(max_length=45)
-    other_applic = models.CharField(max_length=45)
+    id_state_applic = models.ForeignKey(State_applic, on_delete=models.PROTECT)  # Статус заявки (Готово)
+    id_user_applic = models.ForeignKey(User, on_delete=models.PROTECT)
+    id_worker_applic = models.ForeignKey(Worker, on_delete=models.PROTECT) # NULL
+    photo_applic = models.CharField(max_length=200)
+    id_typeDevice_applic = models.ForeignKey(TypeDevice_applic, on_delete=models.PROTECT)  # Тип устройства (Планшет)
+    id_manufacturer_applic = models.ForeignKey(Manufacturer_applic, on_delete=models.PROTECT)
+    model_applic = models.CharField(max_length=100)
+    reason_applic = models.CharField(max_length=250)
+    history_applic = models.CharField(max_length=500)
+    passwordDevice_applic = models.CharField(max_length=256)
+    otherInfo_applic = models.CharField(max_length=1000)
     date_applic = models.DateTimeField(default=timezone.now)
-    #Null
-    adresssamoviz_applic = models.CharField(max_length=45,blank=True,null=True)
-    telmastersamoviz_applic = models.CharField(max_length=45,blank=True,null=True)
-    fiomastersamoviz_applic = models.CharField(max_length=45,blank=True,null=True)
-    verdict_applic = models.CharField(max_length=45,blank=True,null=True)
-    descriptionprice_applic = models.CharField(max_length=45,blank=True,null=True)
+
+    deviceStatus_applic = models.CharField(max_length=1000)# Состояние Устройства (Рабочий, Не рабочий,скол и т.п)
+    adresssamoviz_applic = models.CharField(max_length=256,blank=True,null=True) #Null
+    telmastersamoviz_applic = models.CharField(max_length=11,blank=True,null=True) #Null
+    fiomastersamoviz_applic = models.CharField(max_length=110,blank=True,null=True) #Null
+    #Дефект пользователя reason_applic
+    descriptionWorks_applic = models.CharField(max_length=2000, blank=True, null=True) #Null
+    verdictPrice_applic = models.CharField(max_length=2000,blank=True,null=True) #Null
 
     def __str__(self):
         return f"{self.id_application}({self.date_applic}({self.id_state_applic}({self.id_user_applic})({self.reason_applic})))"
 
 class PriceList(models.Model):
     id_service = models.AutoField(primary_key=True)
-    name_service = models.CharField(max_length=45)
-    description_service = models.CharField(max_length=45)
+    name_service = models.CharField(max_length=100)
+    description_service = models.CharField(max_length=500)
     price_service = models.DecimalField(max_digits=10,decimal_places=2)
 
+    def __str__(self):
+            return f"{self.id_service}({self.name_service})({self.price_service})"
 class Report(models.Model):
     id_Report = models.AutoField(primary_key=True)
-    login = models.CharField(max_length=45)
-    ip = models.CharField(max_length=45)
-    device = models.CharField(max_length=45)
-    action = models.CharField(max_length=45)
+    login = models.CharField(max_length=32)
+    ip = models.CharField(max_length=20)
+    device = models.CharField(max_length=100)
+    action = models.CharField(max_length=100)
     date_action = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -103,7 +108,7 @@ class Report(models.Model):
 
 class Feedbackcol_number(models.Model):
     id_feedbackcol_number = models.AutoField(primary_key=True)
-    number = models.CharField(max_length=2) #!!!
+    number = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return f"{self.id_feedbackcol_number}({self.number})"
@@ -112,7 +117,7 @@ class Feedback(models.Model):
     id_feedback = models.AutoField(primary_key=True)
     id_user = models.ForeignKey(User,on_delete=models.PROTECT)
     id_feedbackcol_number = models.ForeignKey(Feedbackcol_number,on_delete=models.PROTECT)
-    description_service = models.CharField(max_length=45)
+    description_service = models.CharField(max_length=500)
     date_feedback = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -121,9 +126,9 @@ class Feedback(models.Model):
 class Publications(models.Model):
     id_publ = models.AutoField(primary_key=True)
     id_worker_public = models.ForeignKey(Worker,on_delete=models.PROTECT)
-    photo_publ = models.CharField(max_length=45)
-    description_publ = models.CharField(max_length=45)
-    source_public = models.CharField(max_length=45)
+    photo_publ = models.CharField(max_length=200)
+    description_publ = models.CharField(max_length=100)
+    source_public = models.CharField(max_length=1000)
     date_public = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

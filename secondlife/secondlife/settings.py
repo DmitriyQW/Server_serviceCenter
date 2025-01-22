@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'secondlife.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', #Тип субд
-        'NAME':'service',
+        'NAME':'servicecenter',
         'USER':'root',
         'PASSWORD':'root',
         'HOST':'127.0.0.1',
