@@ -2,7 +2,8 @@ from typing import ReadOnly
 
 from rest_framework import serializers
 
-from serviceCenter.models import Worker
+from serviceCenter.models import Worker, User
+
 
 #Сереализатор для формирования объектов и перевода в Json формат
 class WorkerSerializer(serializers.Serializer):
@@ -18,9 +19,12 @@ class WorkerSerializer(serializers.Serializer):
     age_worker = serializers.IntegerField()
     dateregister_worker = serializers.DateTimeField()
 
+    def create(self, validated_data):
+        return Worker.objects.create(**validated_data)
+
 
 class UserSerializer(serializers.Serializer):
-    id_user = serializers.IntegerField()
+    id_user = serializers.IntegerField(read_only=True)
     login_user = serializers.CharField(max_length=32)
     tel_user = serializers.CharField(max_length=11)
     email_user = serializers.EmailField(max_length=254)
@@ -30,7 +34,14 @@ class UserSerializer(serializers.Serializer):
     fio_user = serializers.CharField(max_length=110)
     address_user = serializers.CharField(max_length=256)
     age_user = serializers.IntegerField()
-    dateregister_user = serializers.DateTimeField() #read_only=True надо добавить если пытаться изменить запись
+    dateregister_user = serializers.DateTimeField(read_only=True) #read_only=True надо добавить если пытаться изменить запись
+
+    def create(self, validated_data):
+        return User.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.login_user = validated_data.get("login_user",instance.login_user)
+        instance.tel_user = validated_data.get("tel_user", instance.tel_user)
 
 class State_applicSerializer(serializers.Serializer):
     id_state = serializers.IntegerField()

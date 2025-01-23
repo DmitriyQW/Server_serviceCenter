@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator #Валидация
 from django.utils import timezone
+
 from django.contrib.auth.hashers import make_password #Хеширования пароля
 
 
@@ -142,4 +143,4 @@ class Chat(models.Model):
     message_chat = models.TextField()
 
     def __str__(self):
-        return f"{self.id_chat}({self.date_chat})({self.user_chat})({self.master_chat})({self.master_chat})"
+        return f"{self.id_chat}({self.date_chat})({self.user_chat})({self.master_chat})"

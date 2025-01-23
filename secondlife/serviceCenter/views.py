@@ -42,15 +42,5 @@ class ServiceCenterApiView(APIView):
         serializer.is_valid(raise_exception=True)
         # Проверка приходящего запроса
         # на полноту данных и соответствие ограничений полей
-        user_new = User.objects.create(
-        login_user=request.data['login_user'],
-        tel_user=request.data['tel_user'],
-        email_user=request.data['email_user'],
-        password_user=request.data['password_user'],
-        question_user=request.data['question_user'],
-        answer_user=request.data['answer_user'],
-        fio_user=request.data['fio_user'],
-        address_user=request.data['address_user'],
-        age_user=request.data['age_user'],
-        )
-        return Response({'user':UserSerializer(user_new).data}) #Вывод нового созданного пользователя
+        serializer.save() # Сохранение записи
+        return Response({'user':serializer.data}) #Вывод нового созданного пользователя
