@@ -6,7 +6,7 @@ from rest_framework import generics
 # Импорт моделей.
 from .models import Worker, Application, User
 # Импорт сиализатора.
-from .serializers import WorkerSerializer
+from .serializers import WorkerSerializer, UserSerializer
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -32,11 +32,16 @@ def counter(request,id_count):
 class ServiceCenterApiView(APIView):
     #Вывод всех пользователей
     def get(self,request):
-        lst_users = User.objects.all().values()
-        return Response({'users': list(lst_users)})
+        users = User.objects.all()
+        return Response({'users': UserSerializer(users,many=True).data})
 
     #Создание нового пользователя
     def post(self,request):
+        serializer = UserSerializer(data=request.data)
+        # Создание объекта сеореализатора и передача данных с запроса
+        serializer.is_valid(raise_exception=True)
+        # Проверка приходящего запроса
+        # на полноту данных и соответствие ограничений полей
         user_new = User.objects.create(
         login_user=request.data['login_user'],
         tel_user=request.data['tel_user'],
@@ -48,4 +53,4 @@ class ServiceCenterApiView(APIView):
         address_user=request.data['address_user'],
         age_user=request.data['age_user'],
         )
-        return Response({'user':model_to_dict(user_new)})
+        return Response({'user':UserSerializer(user_new).data}) #Вывод нового созданного пользователя

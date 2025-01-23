@@ -65,7 +65,7 @@ class Application(models.Model):
     id_application = models.AutoField(primary_key=True)
     id_state_applic = models.ForeignKey(State_applic, on_delete=models.PROTECT)  # Статус заявки (Готово)
     id_user_applic = models.ForeignKey(User, on_delete=models.PROTECT)
-    id_worker_applic = models.ForeignKey(Worker, on_delete=models.PROTECT) # NULL
+    id_worker_applic = models.ForeignKey(Worker, on_delete=models.PROTECT, blank=True, null=True) # NULL
     photo_applic = models.CharField(max_length=200)
     id_typeDevice_applic = models.ForeignKey(TypeDevice_applic, on_delete=models.PROTECT)  # Тип устройства (Планшет)
     id_manufacturer_applic = models.ForeignKey(Manufacturer_applic, on_delete=models.PROTECT)
@@ -113,7 +113,7 @@ class Feedbackcol_number(models.Model):
     def __str__(self):
         return f"{self.id_feedbackcol_number}({self.number})"
 
-class Feedback(models.Model):
+class Feedback(models.Model): #Пересмотреть добавление id_applic
     id_feedback = models.AutoField(primary_key=True)
     id_user = models.ForeignKey(User,on_delete=models.PROTECT)
     id_feedbackcol_number = models.ForeignKey(Feedbackcol_number,on_delete=models.PROTECT)
