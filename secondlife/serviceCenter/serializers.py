@@ -40,8 +40,17 @@ class UserSerializer(serializers.Serializer):
         return User.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.login_user = validated_data.get("login_user",instance.login_user)
+        instance.login_user = instance.login_user
         instance.tel_user = validated_data.get("tel_user", instance.tel_user)
+        instance.email_user = validated_data.get("email_user", instance.email_user)
+        instance.password_user = validated_data.get("password_user", instance.password_user)
+        instance.question_user = validated_data.get("question_user", instance.question_user)
+        instance.answer_user = validated_data.get("answer_user", instance.answer_user)
+        instance.fio_user = validated_data.get("fio_user", instance.fio_user)
+        instance.address_user = validated_data.get("address_user", instance.address_user)
+        instance.age_user = validated_data.get("age_user", instance.age_user)
+        instance.save()
+        return  instance
 
 class State_applicSerializer(serializers.Serializer):
     id_state = serializers.IntegerField()

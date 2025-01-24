@@ -44,3 +44,18 @@ class ServiceCenterApiView(APIView):
         # на полноту данных и соответствие ограничений полей
         serializer.save() # Сохранение записи
         return Response({'user':serializer.data}) #Вывод нового созданного пользователя
+
+    def put(self,request,*args,**kwargs):
+        pk = kwargs.get("pk",None)
+        if not pk:
+            return Response({"error":"Method PUT not allowed"})
+
+        try:
+            instance = User.objects.get(pk=pk)
+        except:
+            return Response({"error": "Object does not exist"})
+
+        serializer = UserSerializer(data=request.data,instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return  Response({"user": serializer.data})
