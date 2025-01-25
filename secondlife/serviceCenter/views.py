@@ -49,7 +49,6 @@ class ServiceCenterApiView(APIView):
         pk = kwargs.get("pk",None)
         if not pk:
             return Response({"error":"Method PUT not allowed"})
-
         try:
             instance = User.objects.get(pk=pk)
         except:
@@ -59,3 +58,15 @@ class ServiceCenterApiView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return  Response({"user": serializer.data})
+
+    def delete(self,request,**kwargs):
+        pk = kwargs.get("pk",None)
+        if not pk:
+            return Response({"error":"Method Delete not allowed"})
+        try:
+            user = User.objects.get(pk=pk)
+            user.delete()
+            return Response({"user-delete": f"user-id:{pk} deleted"})
+        except:
+            return Response({"error": "Object does not exist"})
+
