@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.contrib.auth.hashers import make_password #Хеширования пароля
 
 
-#Определение моделей - они же таблицы, поля, связи
+#Определение моделей - они же таблицы, поля, связи, значения по умолчанию (дата)
 class Worker(models.Model):
     id_worker = models.AutoField(primary_key=True)
     login_worker = models.CharField(max_length=32)
@@ -122,7 +122,7 @@ class Feedback(models.Model): #Пересмотреть добавление id_
     date_feedback = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.id_feedback}({self.date_feedback})({self.id_user})({self.date_feedback})({self.id_feedbackcol_number})"
+        return f"{self.id_feedback}({self.date_feedback})({self.id_user})({self.id_feedbackcol_number})"
 
 class Publications(models.Model):
     id_publ = models.AutoField(primary_key=True)
