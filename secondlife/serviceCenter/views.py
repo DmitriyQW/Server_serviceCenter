@@ -5,9 +5,11 @@ from django.shortcuts import render
 from rest_framework import generics,viewsets
 # Импорт моделей.
 from .models import Worker, Application, User
+from .permissions import IsAdminOrReadOnly
 # Импорт сиализатора.
-from .serializers import WorkerSerializer, UserSerializer
+from .serializers import WorkerSerializer, UserSerializer, ApplicationSerializer
 
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -29,8 +31,16 @@ class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+#Api Workers только admin
 class WorkerViewSet(viewsets.ModelViewSet):
     queryset = Worker.objects.all()
     serializer_class = WorkerSerializer
+    permission_classes = (IsAdminUser,)
 
+#Api Workers только admin
+class ApplicationViewSet(viewsets.ModelViewSet):
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
+    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAdminOrReadOnly,)
 
