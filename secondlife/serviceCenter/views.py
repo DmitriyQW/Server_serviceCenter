@@ -4,16 +4,26 @@ from django.shortcuts import render
 # Ответы на запросы.
 from rest_framework import generics,viewsets
 # Импорт моделей.
-from .models import Worker, Application, User
+from .models import Worker, Application, User, State_applic
 from .permissions import IsAdminOrReadOnly
 # Импорт сиализатора.
-from .serializers import WorkerSerializer, UserSerializer, ApplicationSerializer
+from .serializers import WorkerSerializer, UserSerializer, ApplicationSerializer, State_applicSerializer
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from django.forms.models import model_to_dict
+
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView #Токины
+from .serializers import CustomTokenObtainPairSerializer,CustomTokenRefreshSerializer
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+class CustomTokenRefreshView(TokenRefreshView):
+    serializer_class = CustomTokenRefreshSerializer
+
 # Ответы на запросы.
 def index(request):
     return HttpResponse("Страница приложения сервисный центр")
@@ -38,9 +48,14 @@ class WorkerViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminUser,)
 
 #Api Workers только admin
+class State_applicSet(viewsets.ModelViewSet):
+    queryset = State_applic.objects.all()
+    serializer_class = State_applicSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+
+#Api Workers только admin
 class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
     permission_classes = (IsAuthenticated,)
     # permission_classes = (IsAdminOrReadOnly,)
-

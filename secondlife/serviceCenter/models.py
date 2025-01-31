@@ -2,8 +2,10 @@ from django.db import models
 from django.core.validators import MaxValueValidator #Валидация
 from django.utils import timezone
 
-from django.contrib.auth.hashers import make_password #Хеширования пароля
+from django.contrib.auth.hashers import make_password, check_password  # Хеширования пароля
 
+#Hes
+from .utils import hash_password, hash_answer, normalize_input
 
 #Определение моделей - они же таблицы, поля, связи, значения по умолчанию (дата)
 class Worker(models.Model):
@@ -19,10 +21,34 @@ class Worker(models.Model):
     age_worker = models.PositiveSmallIntegerField(validators=
     [MaxValueValidator(100)]) #Валидация максимальный возврат 100 лет
     dateregister_worker = models.DateTimeField(default=timezone.now)
+    is_staff = models.BooleanField(default=False)
+    def save(self, *args, **kwargs):
+        # Автоматическое хеширование при сохранении
+        if not self.password_worker.startswith('pbkdf2_'):
+            self.password_worker = hash_password(self.password_worker)
+
+        if not self.answer_worker.startswith('pbkdf2_'):
+            self.answer_worker = hash_answer(self.answer_worker)
+
+        super().save(*args, **kwargs)
+
+    def check_password(self, raw_password):
+        """Проверка пароля"""
+        normalized_password = raw_password.replace(" ", "")
+        return check_password(normalized_password, self.password_worker)
+
+    def check_answer(self, raw_answer):
+        """Проверка контрольного ответа"""
+        normalized_answer = normalize_input(raw_answer)
+        return check_password(normalized_answer, self.answer_worker)
 
     # Определение функции вывода информации строки
     def __str__(self):
         return f"{self.id_worker} ({self.fio_worker})" # Возвращение id и Фио мастера
+
+    @property
+    def id(self):
+        return self.id_worker
 
 class User(models.Model):
     id_user = models.AutoField(primary_key=True)
@@ -33,13 +59,36 @@ class User(models.Model):
     question_user = models.CharField(max_length=100)
     answer_user = models.CharField(max_length=255) #HES
     fio_user = models.CharField(max_length=110)
-    address_user = models.CharField(max_length=256)#
-    age_user = models.PositiveSmallIntegerField(validators=
-    [MaxValueValidator(100)]) #Валидация максимальный возврат 100 лет
+    address_user = models.CharField(max_length=256)
+    age_user = models.PositiveSmallIntegerField(validators=[MaxValueValidator(100)])
     dateregister_user = models.DateTimeField(default=timezone.now)
+    is_staff = models.BooleanField(default=False)
+    def save(self, *args, **kwargs):
+        # Автоматическое хеширование при сохранении
+        if not self.password_user.startswith('pbkdf2_'):
+            self.password_user = hash_password(self.password_user)
+
+        if not self.answer_user.startswith('pbkdf2_'):
+            self.answer_user = hash_answer(self.answer_user)
+
+        super().save(*args, **kwargs)
+
+    def check_password(self, raw_password):
+        """Проверка пароля"""
+        normalized_password = raw_password.replace(" ", "")
+        return check_password(normalized_password, self.password_user)
+
+    def check_answer(self, raw_answer):
+        """Проверка контрольного ответа"""
+        normalized_answer = normalize_input(raw_answer)
+        return check_password(normalized_answer, self.answer_user)
 
     def __str__(self):
         return f"{self.id_user}({self.fio_user})"
+
+    @property
+    def id(self):
+        return self.id_user
 
 class State_applic(models.Model):
     id_state = models.AutoField(primary_key=True)
