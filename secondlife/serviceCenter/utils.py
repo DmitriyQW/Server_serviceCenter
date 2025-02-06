@@ -13,3 +13,11 @@ def hash_answer(raw_answer):
     #Хеширование контрольного ответа
     normalized_answer = normalize_input(raw_answer)
     return make_password(normalized_answer)
+
+class UserUtils:
+    @staticmethod
+    def format_username(username):
+        """
+        Возвращает имя пользователя в нижнем регистре и без пробелов.
+        """
+        return username.lower().replace(" ", "")

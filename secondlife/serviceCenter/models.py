@@ -1,94 +1,50 @@
 from django.db import models
 from django.core.validators import MaxValueValidator #Валидация
 from django.utils import timezone
-
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password, check_password  # Хеширования пароля
+from .utils import  UserUtils #Hes
 
-#Hes
-from .utils import hash_password, hash_answer, normalize_input
 
 #Определение моделей - они же таблицы, поля, связи, значения по умолчанию (дата)
-class Worker(models.Model):
-    id_worker = models.AutoField(primary_key=True)
-    login_worker = models.CharField(max_length=32)
-    tel_worker = models.CharField(max_length=11)
-    email_worker = models.EmailField(max_length=254)
-    password_worker = models.CharField(max_length=255) #HES
-    question_worker = models.CharField(max_length=100)
-    answer_worker = models.CharField(max_length=255)
-    fio_worker = models.CharField(max_length=110)
-    address_worker = models.CharField(max_length=256)
-    age_worker = models.PositiveSmallIntegerField(validators=
-    [MaxValueValidator(100)]) #Валидация максимальный возврат 100 лет
-    dateregister_worker = models.DateTimeField(default=timezone.now)
-    is_staff = models.BooleanField(default=False)
-    def save(self, *args, **kwargs):
-        # Автоматическое хеширование при сохранении
-        if not self.password_worker.startswith('pbkdf2_'):
-            self.password_worker = hash_password(self.password_worker)
 
-        if not self.answer_worker.startswith('pbkdf2_'):
-            self.answer_worker = hash_answer(self.answer_worker)
+class CustomUser(AbstractUser):
+    USER_TYPE_CHOICES = (
+        ('master', 'Мастер'),
+        ('user', 'Пользователь'),
+        ('admin', 'Администратор'),
+    )
+
+    # Поля для всех типов пользователей
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
+    tel = models.CharField(max_length=11, blank=True, null=True)
+    fio = models.CharField(max_length=110)
+    address = models.CharField(max_length=256, blank=True, null=True)
+    age = models.PositiveSmallIntegerField(validators=[MaxValueValidator(100)], blank=True, null=True)
+    dateregister = models.DateTimeField(default=timezone.now)
+
+    # Поля для мастеров и пользователей
+    question = models.CharField(max_length=100, blank=True, null=True)
+    answer = models.CharField(max_length=255, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        # Хеширование пароля и ответа при сохранении
+        if not self.password.startswith('pbkdf2_'):
+            self.password = make_password(self.password)
+
+        if self.answer and not self.answer.startswith('pbkdf2_'):
+            self.answer = make_password(self.answer)
 
         super().save(*args, **kwargs)
 
-    def check_password(self, raw_password):
-        """Проверка пароля"""
-        normalized_password = raw_password.replace(" ", "")
-        return check_password(normalized_password, self.password_worker)
-
     def check_answer(self, raw_answer):
         """Проверка контрольного ответа"""
-        normalized_answer = normalize_input(raw_answer)
-        return check_password(normalized_answer, self.answer_worker)
-
-    # Определение функции вывода информации строки
-    def __str__(self):
-        return f"{self.id_worker} ({self.fio_worker})" # Возвращение id и Фио мастера
-
-    @property
-    def id(self):
-        return self.id_worker
-
-class User(models.Model):
-    id_user = models.AutoField(primary_key=True)
-    login_user = models.CharField(max_length=32)
-    tel_user = models.CharField(max_length=11)
-    email_user = models.EmailField(max_length=254)
-    password_user = models.CharField(max_length=255) #HES
-    question_user = models.CharField(max_length=100)
-    answer_user = models.CharField(max_length=255) #HES
-    fio_user = models.CharField(max_length=110)
-    address_user = models.CharField(max_length=256)
-    age_user = models.PositiveSmallIntegerField(validators=[MaxValueValidator(100)])
-    dateregister_user = models.DateTimeField(default=timezone.now)
-    is_staff = models.BooleanField(default=False)
-    def save(self, *args, **kwargs):
-        # Автоматическое хеширование при сохранении
-        if not self.password_user.startswith('pbkdf2_'):
-            self.password_user = hash_password(self.password_user)
-
-        if not self.answer_user.startswith('pbkdf2_'):
-            self.answer_user = hash_answer(self.answer_user)
-
-        super().save(*args, **kwargs)
-
-    def check_password(self, raw_password):
-        """Проверка пароля"""
-        normalized_password = raw_password.replace(" ", "")
-        return check_password(normalized_password, self.password_user)
-
-    def check_answer(self, raw_answer):
-        """Проверка контрольного ответа"""
-        normalized_answer = normalize_input(raw_answer)
-        return check_password(normalized_answer, self.answer_user)
+        return check_password(raw_answer, self.answer)
 
     def __str__(self):
-        return f"{self.id_user}({self.fio_user})"
+        # Используем утилиту для форматирования имени пользователя
+        return UserUtils.format_username(self.username)
 
-    @property
-    def id(self):
-        return self.id_user
 
 class State_applic(models.Model):
     id_state = models.AutoField(primary_key=True)
@@ -114,8 +70,8 @@ class Manufacturer_applic(models.Model):
 class Application(models.Model):
     id_application = models.AutoField(primary_key=True)
     id_state_applic = models.ForeignKey(State_applic, on_delete=models.PROTECT)  # Статус заявки (Готово)
-    id_user_applic = models.ForeignKey(User, on_delete=models.PROTECT)
-    id_worker_applic = models.ForeignKey(Worker, on_delete=models.PROTECT, blank=True, null=True) # NULL
+    id_user_applic = models.ForeignKey(CustomUser, on_delete=models.PROTECT,related_name= "user_applic")
+    id_worker_applic = models.ForeignKey(CustomUser, on_delete=models.PROTECT, blank=True, null=True,related_name= "worker_applic") # NULL
     photo_applic = models.CharField(max_length=200)
     id_typeDevice_applic = models.ForeignKey(TypeDevice_applic, on_delete=models.PROTECT)  # Тип устройства (Планшет)
     id_manufacturer_applic = models.ForeignKey(Manufacturer_applic, on_delete=models.PROTECT)
@@ -165,7 +121,7 @@ class Feedbackcol_number(models.Model):
 
 class Feedback(models.Model): #Пересмотреть добавление id_applic
     id_feedback = models.AutoField(primary_key=True)
-    id_user = models.ForeignKey(User,on_delete=models.PROTECT)
+    id_user = models.ForeignKey(CustomUser,on_delete=models.PROTECT,related_name= "feedbackcol_user")
     id_feedbackcol_number = models.ForeignKey(Feedbackcol_number,on_delete=models.PROTECT)
     description_service = models.CharField(max_length=500)
     date_feedback = models.DateTimeField(default=timezone.now)
@@ -175,7 +131,7 @@ class Feedback(models.Model): #Пересмотреть добавление id_
 
 class Publications(models.Model):
     id_publ = models.AutoField(primary_key=True)
-    id_worker_public = models.ForeignKey(Worker,on_delete=models.PROTECT)
+    id_worker_public = models.ForeignKey(CustomUser,on_delete=models.PROTECT,related_name= "public_worker")
     photo_publ = models.CharField(max_length=200)
     description_publ = models.CharField(max_length=100)
     source_public = models.CharField(max_length=1000)
@@ -186,10 +142,10 @@ class Publications(models.Model):
 
 class Chat(models.Model):
     id_chat = models.AutoField(primary_key=True)
-    master_chat = models.ForeignKey(Worker,on_delete=models.PROTECT)
-    user_chat = models.ForeignKey(User,on_delete=models.PROTECT)
+    worker_chat = models.ForeignKey(CustomUser,on_delete=models.PROTECT,related_name= "chat_worker")
+    user_chat = models.ForeignKey(CustomUser,on_delete=models.PROTECT,related_name= "chat_user")
     date_chat = models.DateTimeField(default=timezone.now)
     message_chat = models.TextField()
 
     def __str__(self):
-        return f"{self.id_chat}({self.date_chat})({self.user_chat})({self.master_chat})"
+        return f"{self.id_chat}({self.date_chat})({self.user_chat})({self.worker_chat})"

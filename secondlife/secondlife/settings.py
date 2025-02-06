@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'secondlife.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', #Тип субд
-        'NAME':'servicecenter',
+        'NAME':'servicecenterm',
         'USER':'root',
         'PASSWORD':'root',
         'HOST':'127.0.0.1',
@@ -143,6 +143,10 @@ REST_FRAMEWORK = {
     ]
 }
 
+
+AUTH_USER_MODEL = 'serviceCenter.CustomUser'
+
+# Настройки Simple JWT
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
@@ -156,11 +160,11 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
 
-    # ВАЖНЫЕ НАСТРОЙКИ
-    "USER_ID_FIELD": "id",  # Используйте стандартное имя
+    # Важные настройки
+    "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
 
-    # КАСТОМНЫЕ СЕРИАЛИЗАТОРЫ
+    # Кастомные сериализаторы
     "TOKEN_OBTAIN_SERIALIZER": "serviceCenter.serializers.CustomTokenObtainPairSerializer",
     "TOKEN_REFRESH_SERIALIZER": "serviceCenter.serializers.CustomTokenRefreshSerializer",
 }

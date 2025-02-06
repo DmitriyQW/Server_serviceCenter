@@ -1,28 +1,13 @@
-from django.http import HttpResponse, HttpResponseNotFound
-from django.shortcuts import render
-
+from django.http import HttpResponse
 # Ответы на запросы.
-from rest_framework import generics,viewsets
+from rest_framework import generics
 # Импорт моделей.
-from .models import Worker, Application, User, State_applic
-from .permissions import IsAdminOrReadOnly
-# Импорт сиализатора.
-from .serializers import WorkerSerializer, UserSerializer, ApplicationSerializer, State_applicSerializer
-
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
+from .models import   CustomUser
+from .serializers import  CustomUserSerializer
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from django.forms.models import model_to_dict
 
-from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView #Токины
-from .serializers import CustomTokenObtainPairSerializer,CustomTokenRefreshSerializer
-
-class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
-
-class CustomTokenRefreshView(TokenRefreshView):
-    serializer_class = CustomTokenRefreshSerializer
 
 # Ответы на запросы.
 def index(request):
@@ -34,28 +19,18 @@ def pricelist(request):
 def counter(request,id_count):
     return  HttpResponse(f"<h2>Х2 counter = {id_count}</h2>")
 
-# def page_not_found(request,exception):
-#     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
 
-class UsersViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class UserCreateView(generics.ListCreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAdminUser]  # Используем наше пользовательское разрешение
 
-#Api Workers только admin
-class WorkerViewSet(viewsets.ModelViewSet):
-    queryset = Worker.objects.all()
-    serializer_class = WorkerSerializer
-    permission_classes = (IsAdminUser,)
+    def perform_create(self, serializer):
+        user_type = self.request.data.get('user_type')
 
-#Api Workers только admin
-class State_applicSet(viewsets.ModelViewSet):
-    queryset = State_applic.objects.all()
-    serializer_class = State_applicSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+        # Проверка на создание мастера только администратором
+        if user_type == 'master' and not self.request.user.is_staff:
+            return Response({"error": "Только администратор может создать мастера."}, status=status.HTTP_403_FORBIDDEN)
 
-#Api Workers только admin
-class ApplicationViewSet(viewsets.ModelViewSet):
-    queryset = Application.objects.all()
-    serializer_class = ApplicationSerializer
-    permission_classes = (IsAuthenticated,)
-    # permission_classes = (IsAdminOrReadOnly,)
+
+        serializer.save()
