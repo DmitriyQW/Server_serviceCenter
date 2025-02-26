@@ -2,9 +2,9 @@ from django.http import HttpResponse
 # Ответы на запросы.
 from rest_framework import generics
 # Импорт моделей.
-from .models import   CustomUser
-from .serializers import  CustomUserSerializer
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from .models import CustomUser, Manufacturer_applic
+from .serializers import CustomUserSerializer, Manufacturer_applicSerializer
+from rest_framework.permissions import IsAdminUser, IsAuthenticated,AllowAny
 from rest_framework.response import Response
 
 
@@ -34,3 +34,8 @@ class UserCreateView(generics.ListCreateAPIView):
 
 
         serializer.save()
+
+class ManufacturerApplic(generics.ListAPIView):
+    queryset = Manufacturer_applic.objects.all()
+    serializer_class = Manufacturer_applicSerializer
+    permission_classes = [AllowAny]

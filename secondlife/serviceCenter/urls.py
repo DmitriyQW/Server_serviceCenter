@@ -1,8 +1,7 @@
 from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView,TokenVerifyView
-from .views import UserCreateView
-
+from .views import UserCreateView, ManufacturerApplic
 
 #Обработка адресов
 urlpatterns = [
@@ -13,6 +12,10 @@ urlpatterns = [
     #api
     path('api/v1/users/', UserCreateView.as_view(), name='user-create'),
     #http://127.0.0.1:8000/api/v1/users/
+
+    # api
+    path('api/v1/manufacturerapplic/', ManufacturerApplic.as_view(), name='get-manufacturerapplic'),
+    # http://127.0.0.1:8000/api/v1/manufacturerapplic/
 
     # Эндпоинты для токенов
     path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
