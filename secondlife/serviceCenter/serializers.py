@@ -10,6 +10,23 @@ from django.db.models import Q
 # Для изменения записи в бд содержимого полей объекта
 # Для удаления записи в бд объекта
 
+
+class UserRegisterSerializer(serializers.ModelSerializer):
+    ## Сериализатор для регистрации пользователя
+    class Meta:
+        model = CustomUser #Модеель
+        fields = ['username', 'tel', 'email', 'password', 'question', 'answer', 'fio', 'address', 'age']
+        # Поля для сереализации
+        extra_kwargs = {'password': {'write_only': True}, 'answer': {'write_only': True}}
+        # Задание определённых свойств
+
+    def create(self, validated_data):
+        validated_data['user_type'] = 'user'  # Установите тип пользователя на "user"
+        validated_data['password'] = make_password(validated_data['password'])  # Хеширование пароля
+        validated_data['answer'] = make_password(validated_data['answer']) # Хеширование ответа на вопрос
+        return super().create(validated_data) # Создание нового пользователя
+
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     login_or_email_or_phone = serializers.CharField()
     password = serializers.CharField()

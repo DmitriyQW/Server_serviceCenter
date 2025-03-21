@@ -3,13 +3,16 @@ from django.http import HttpResponse
 from rest_framework import generics
 # Импорт моделей.
 from .models import CustomUser, Manufacturer_applic
-from .serializers import CustomUserSerializer, Manufacturer_applicSerializer
+from .serializers import CustomUserSerializer, Manufacturer_applicSerializer, UserRegisterSerializer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated,AllowAny
 from rest_framework.response import Response
 
 
 
 # Ответы на запросы.
+
+
+
 def index(request):
     return HttpResponse("Страница приложения сервисный центр")
 
@@ -18,6 +21,10 @@ def pricelist(request):
 
 def counter(request,id_count):
     return  HttpResponse(f"<h2>Х2 counter = {id_count}</h2>")
+
+class UserRegisterView(generics.CreateAPIView): ## View для регистрации обычных пользователей
+    serializer_class = UserRegisterSerializer
+    permission_classes = [AllowAny]  # Разрешаем неавторизованным пользователям создавать аккаунты
 
 
 class UserCreateView(generics.ListCreateAPIView):
