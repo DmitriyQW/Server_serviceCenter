@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView,TokenVerifyView
-from .views import UserCreateView, ManufacturerApplic, UserRegisterView
+from .views import UserCreateView, ManufacturerApplic, UserRegisterView, MasterListView, UserListView
 
 #Обработка адресов
 urlpatterns = [
@@ -15,6 +15,12 @@ urlpatterns = [
 
     # path('api/v1/users-register/', UserCreateView.as_view(), name='user-create'),
     # #http://127.0.0.1:8000/api/v1/users-register/
+
+    path('api/v1/masters/',MasterListView.as_view(),name='list-masters'), #api возвращающие всех мастеров
+    # http://127.0.0.1:8000/api/v1/masters/
+
+    path('api/v1/users/',UserListView.as_view(),name='list-users'), #api возвращающие всех пользователей
+    # http://127.0.0.1:8000/api/v1/users/
 
     # api
     path('api/v1/manufacturerapplic/', ManufacturerApplic.as_view(), name='get-manufacturerapplic'),

@@ -22,6 +22,40 @@ def pricelist(request):
 def counter(request,id_count):
     return  HttpResponse(f"<h2>Х2 counter = {id_count}</h2>")
 
+
+
+class UserListView(generics.ListAPIView): ##
+    """
+    ListAPIView для просмотра списка всех пользователей.
+    Доступен только администраторам.
+    """
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        """
+        Переопределяем метод get_queryset, чтобы возвращать только пользователей.
+        """
+        return CustomUser.objects.filter(user_type='user')
+
+
+class MasterListView(generics.ListAPIView): ##
+    """
+    ListAPIView для просмотра списка всех мастеров.
+    Доступен только администраторам.
+    """
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        """
+        Переопределяем метод get_queryset, чтобы возвращать только мастеров.
+        """
+        return CustomUser.objects.filter(user_type='master')
+
+
+
+
 class UserRegisterView(generics.CreateAPIView): ## View для регистрации обычных пользователей
     serializer_class = UserRegisterSerializer
     permission_classes = [AllowAny]  # Разрешаем неавторизованным пользователям создавать аккаунты
