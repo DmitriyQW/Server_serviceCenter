@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'serviceCenter.apps.ServicecenterConfig',#Инициализация приложения
     'rest_framework',#Django rest
+    # 'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [

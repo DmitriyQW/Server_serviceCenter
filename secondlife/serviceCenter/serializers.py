@@ -11,6 +11,25 @@ from django.db.models import Q
 # Для удаления записи в бд объекта
 
 
+class ApplicationCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Application
+        fields = [
+            'id_typeDevice_applic',
+            'id_manufacturer_applic',
+            'model_applic',
+            'reason_applic',
+            'history_applic',
+            'passwordDevice_applic',
+            'otherInfo_applic',
+            'deviceStatus_applic'
+        ]
+        extra_kwargs = {
+            'id_state_applic': {'read_only': True},
+            'id_user_applic': {'read_only': True}
+        }
+
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     ## Сериализатор для регистрации пользователя
     class Meta:

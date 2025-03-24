@@ -1,7 +1,8 @@
 from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView,TokenVerifyView
-from .views import UserCreateView, ManufacturerApplic, UserRegisterView, MasterListView, UserListView
+from .views import UserCreateView, ManufacturerApplic, UserRegisterView, MasterListView, UserListView, \
+    ApplicationCreateView, StateApplicList, TypeDeviceList, ManufacturerList
 
 #Обработка адресов
 urlpatterns = [
@@ -31,8 +32,19 @@ urlpatterns = [
     #http://127.0.0.1:8000/api/v1/user-sign/
 
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    #http://127.0.0.1:8000/api/v1/token/refresh/
+
+
+
 
     path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+
+
+
+    path('api/v1/orders/create/', ApplicationCreateView.as_view(), name='create-order'),
+    path('api/v1/states/', StateApplicList.as_view(), name='states-list'),
+    path('api/v1/devices/', TypeDeviceList.as_view(), name='devices-list'),
+    path('api/v1/manufacturers/', ManufacturerList.as_view(), name='manufacturers-list'),
 ]
 
 
