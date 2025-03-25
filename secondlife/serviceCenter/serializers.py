@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer # Токины
 from django.contrib.auth.hashers import  make_password
 from serviceCenter.models import State_applic, TypeDevice_applic, Manufacturer_applic, Application, \
-    PriceList, Report, Feedbackcol_number, Feedback, Publications, Chat, CustomUser
+    PriceList, Feedbackcol_number, Feedback, Publications, CustomUser
 from django.db.models import Q
 
 #Сереализатор для формирования объектов и перевода в Json формат
@@ -10,10 +10,9 @@ from django.db.models import Q
 # Для изменения записи в бд содержимого полей объекта
 # Для удаления записи в бд объекта
 
-
 class ApplicationCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Application
+        model = Application  # Указываем модель, с которой работает сериализатор
         fields = [
             'id_typeDevice_applic',
             'id_manufacturer_applic',
@@ -22,12 +21,27 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
             'history_applic',
             'passwordDevice_applic',
             'otherInfo_applic',
-            'deviceStatus_applic'
         ]
-        extra_kwargs = {
-            'id_state_applic': {'read_only': True},
-            'id_user_applic': {'read_only': True}
-        }
+
+    exclude = ['deviceStatus_applic'] # Поля, которые будут исключены из сериализации (в данном случае это поле deviceStatus_applic)
+
+    def create(self, request, validated_data):
+        user = request.user # Получаем текущего аутентифицированного пользователя из запроса
+        state_applic_new = State_applic.objects.get(pk=2) # Получаем объект статуса заявки с id=2 ("Уточнение информации")
+
+        # Создаем новую заявку, используя данные из validated_data и информацию о пользователе
+        application = Application.objects.create(
+            id_user_applic=user,
+            id_state_applic=state_applic_new,
+            user_fio_applic=user.fio,
+            user_tel_applic=user.tel,
+            user_email_applic=user.email,
+            user_adress_applic=user.address,
+            **validated_data # Остальные данные, переданные в запросе
+        )
+        # Возвращаем созданную заявку
+        return application
+
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -165,14 +179,7 @@ class PriceListSerializer(serializers.ModelSerializer):
             'id_service':{'read_only':True}
         }
 
-class ReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Report
-        fields = '__all__'
-        extra_kwargs = {
-            'id_Report':{'read_only':True},
-            'date_action': {'read_only': True}
-        }
+
 
 class Feedbackcol_numberSerializer(serializers.ModelSerializer):
     class Meta:
@@ -200,12 +207,5 @@ class PublicationsSerializer(serializers.ModelSerializer):
             'date_public': {'read_only': True}
         }
 
-class ChatSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Chat
-        fields = '__all__'
-        extra_kwargs = {
-            'id_chat':{'read_only':True},
-            'date_chat': {'read_only': True}
-        }
+
 

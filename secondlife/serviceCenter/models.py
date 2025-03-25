@@ -69,10 +69,15 @@ class Manufacturer_applic(models.Model):
 
 class Application(models.Model):
     id_application = models.AutoField(primary_key=True) #id
-    id_state_applic = models.ForeignKey(State_applic, on_delete=models.PROTECT)  # Статус заявки (Готово)
+
+
+    id_state_applic = models.ForeignKey(State_applic, on_delete=models.PROTECT)  # Статус заявки (Ожидает)
     id_user_applic = models.ForeignKey(CustomUser, on_delete=models.PROTECT,related_name= "user_applic") #id user
-    id_worker_applic = models.ForeignKey(CustomUser, on_delete=models.PROTECT, blank=True, null=True,related_name= "worker_applic") # NULL id worker
-    photo_applic = models.CharField(max_length=200) # no
+    user_fio_applic = models.CharField(max_length=110)  # user ФИО
+    user_tel_applic = models.CharField(max_length=11)  # user Тлефон
+    user_email_applic = models.CharField(max_length=200)  # user Почта
+    user_adress_applic = models.CharField(max_length=200)  # user Адрес
+
     id_typeDevice_applic = models.ForeignKey(TypeDevice_applic, on_delete=models.PROTECT)  # Тип устройства (Планшет)
     id_manufacturer_applic = models.ForeignKey(Manufacturer_applic, on_delete=models.PROTECT) # Производитель
     model_applic = models.CharField(max_length=100) # Модель
@@ -83,16 +88,17 @@ class Application(models.Model):
 
     date_applic = models.DateTimeField(default=timezone.now) #Дата создания заявки
 
-    deviceStatus_applic = models.CharField(max_length=1000)# Состояние Устройства (Рабочий, Не рабочий,скол и т.п)
-
+    id_worker_applic = models.ForeignKey(CustomUser, on_delete=models.PROTECT, blank=True, null=True,related_name="worker_applic")  # NULL id worker (Кто выполнел)
     adresssamoviz_applic = models.CharField(max_length=256,blank=True,null=True) #Null Адресс для забора устройства
     telmastersamoviz_applic = models.CharField(max_length=11,blank=True,null=True) #Null Телефон мастера
     fiomastersamoviz_applic = models.CharField(max_length=110,blank=True,null=True) #Null Фио мастера
 
 
+    deviceStatus_applic = models.CharField(max_length=1000, blank=True, null=True)  # Состояние Устройства (Рабочий, Не рабочий,скол и т.п)
     descriptionWorks_applic = models.CharField(max_length=2000, blank=True, null=True)  # Null Дефект реальный
     verdictPrice_applic = models.CharField(max_length=2000,blank=True,null=True) #Null Стоимость работ
 
+    # Метод для строкового представления объекта
     def __str__(self):
         return f"{self.id_application}({self.date_applic}({self.id_state_applic}({self.id_user_applic})({self.reason_applic})))"
 
@@ -104,16 +110,8 @@ class PriceList(models.Model):
 
     def __str__(self):
             return f"{self.id_service}({self.name_service})({self.price_service})"
-class Report(models.Model):
-    id_Report = models.AutoField(primary_key=True)
-    login = models.CharField(max_length=32)
-    ip = models.CharField(max_length=20)
-    device = models.CharField(max_length=100)
-    action = models.CharField(max_length=100)
-    date_action = models.DateTimeField(default=timezone.now)
 
-    def __str__(self):
-        return f"{self.id_Report}({self.login}({self.action}({self.date_action})))"
+
 
 class Feedbackcol_number(models.Model):
     id_feedbackcol_number = models.AutoField(primary_key=True)
@@ -143,12 +141,3 @@ class Publications(models.Model):
     def __str__(self):
         return f"{self.id_publ}({self.date_public})({self.description_publ})({self.source_public})({self.id_worker_public})"
 
-class Chat(models.Model):
-    id_chat = models.AutoField(primary_key=True)
-    worker_chat = models.ForeignKey(CustomUser,on_delete=models.PROTECT,related_name= "chat_worker")
-    user_chat = models.ForeignKey(CustomUser,on_delete=models.PROTECT,related_name= "chat_user")
-    date_chat = models.DateTimeField(default=timezone.now)
-    message_chat = models.TextField()
-
-    def __str__(self):
-        return f"{self.id_chat}({self.date_chat})({self.user_chat})({self.worker_chat})"

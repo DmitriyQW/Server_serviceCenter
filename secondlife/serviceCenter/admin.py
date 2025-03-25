@@ -4,7 +4,7 @@ from django.contrib import admin
 
 from .models import (CustomUser,State_applic,TypeDevice_applic,
                      Manufacturer_applic,Application,PriceList,
-                     Report,Feedbackcol_number,Feedback,Publications,Chat)
+                     Feedbackcol_number,Feedback,Publications)
 
 # Регистрируем каждую модель
 admin.site.register(CustomUser)
@@ -13,8 +13,7 @@ admin.site.register(TypeDevice_applic)
 admin.site.register(Manufacturer_applic)
 admin.site.register(Application)
 admin.site.register(PriceList)
-admin.site.register(Report)
 admin.site.register(Feedbackcol_number)
 admin.site.register(Feedback)
 admin.site.register(Publications)
-admin.site.register(Chat)
+

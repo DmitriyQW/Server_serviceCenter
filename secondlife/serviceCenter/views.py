@@ -4,10 +4,10 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 
 # Импорт моделей.
-from .models import CustomUser, Manufacturer_applic, State_applic, TypeDevice_applic
+from .models import CustomUser, Manufacturer_applic, State_applic, TypeDevice_applic, PriceList
 from .permissions import IsUserOrAdmin
 from .serializers import CustomUserSerializer, Manufacturer_applicSerializer, UserRegisterSerializer, \
-    ApplicationCreateSerializer, TypeDevice_applicSerializer, State_applicSerializer
+    ApplicationCreateSerializer, TypeDevice_applicSerializer, State_applicSerializer, PriceListSerializer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated,AllowAny
 from rest_framework.response import Response
 
@@ -27,20 +27,20 @@ def counter(request,id_count):
     return  HttpResponse(f"<h2>Х2 counter = {id_count}</h2>")
 
 
-class ApplicationCreateView(APIView): #Создание заявки от пользователя и администратора
-    permission_classes = [IsUserOrAdmin]
 
-    def post(self, request):
-        # Автоматическое заполнение полей
-        data = request.data.copy()
-        data['id_user_applic'] = request.user.id
-        data['id_state_applic'] = 6  # Статус "Новая заявка"
+class ApplicationCreateView(generics.CreateAPIView):
+    serializer_class = ApplicationCreateSerializer # Указываем сериализатор, который будет использоваться для обработки данных
+    permission_classes = [IsUserOrAdmin]  # Только пользователь или Admin
 
-        serializer = ApplicationCreateSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)  # Передаем данные из запроса в сериализатор
+        serializer.is_valid(raise_exception=True)  # Проверяем данные на валидность. Если данные некорректны, выбрасывается исключение с ошибками.
+
+        application = serializer.create(request, serializer.validated_data) # Вызываем метод `create` из сериализатора, передавая `request` и валидированные данные.
+        headers = self.get_success_headers(serializer.data) # Получаем заголовки для успешного ответа
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)   # Возвращаем успешный ответ с данными созданной заявки и статусом HTTP 201 (Created)
+
 
 # Справочники для анкеты
 class StateApplicList(generics.ListAPIView): #Вывод всех статусов заявки
@@ -57,6 +57,11 @@ class ManufacturerList(generics.ListAPIView): # Вывод всех произв
     queryset = Manufacturer_applic.objects.all()
     serializer_class = Manufacturer_applicSerializer
     permission_classes = [AllowAny]
+
+class PriceListView(generics.ListAPIView):
+    queryset = PriceList.objects.all()
+    serializer_class = PriceListSerializer
+    permission_classes = [AllowAny]  # Прайс-лист доступен всем
 
 class UserListView(generics.ListAPIView): ##
     """

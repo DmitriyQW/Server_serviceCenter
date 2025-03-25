@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'serviceCenter.apps.ServicecenterConfig',#Инициализация приложения
     'rest_framework',#Django rest
-    # 'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'secondlife.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', #Тип субд
-        'NAME':'servicecenterm',
+        'NAME':'servicecentermv',
         'USER':'root',
         'PASSWORD':'root',
         'HOST':'127.0.0.1',
