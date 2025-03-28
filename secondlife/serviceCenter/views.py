@@ -4,10 +4,11 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 
 # Импорт моделей.
-from .models import CustomUser, Manufacturer_applic, State_applic, TypeDevice_applic, PriceList
-from .permissions import IsUserOrAdmin
+from .models import CustomUser, Manufacturer_applic, State_applic, TypeDevice_applic, PriceList, Application
+from .permissions import IsUserOrAdmin, IsMasterOrAdmin
 from .serializers import CustomUserSerializer, Manufacturer_applicSerializer, UserRegisterSerializer, \
-    ApplicationCreateSerializer, TypeDevice_applicSerializer, State_applicSerializer, PriceListSerializer
+    ApplicationCreateSerializer, TypeDevice_applicSerializer, State_applicSerializer, PriceListSerializer, \
+    OrderItemSerializer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated,AllowAny
 from rest_framework.response import Response
 
@@ -26,6 +27,11 @@ def pricelist(request):
 def counter(request,id_count):
     return  HttpResponse(f"<h2>Х2 counter = {id_count}</h2>")
 
+
+class OrderListView(generics.ListAPIView): #Все заявки для мастера
+    queryset = Application.objects.all() #Все объекты
+    serializer_class = OrderItemSerializer #Сериализатор
+    permission_classes = [IsMasterOrAdmin] #Ограничение только мастер и админ
 
 
 class ApplicationCreateView(generics.CreateAPIView):

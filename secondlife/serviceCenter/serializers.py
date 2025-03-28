@@ -10,7 +10,41 @@ from django.db.models import Q
 # Для изменения записи в бд содержимого полей объекта
 # Для удаления записи в бд объекта
 
-class ApplicationCreateSerializer(serializers.ModelSerializer):
+
+
+class OrderItemSerializer(serializers.ModelSerializer): #Сереализатор Заказов для отображения мастеру
+    # Шапка
+    numberOrder = serializers.CharField(source='id_application')
+    dataOrder = serializers.DateTimeField(source='date_applic')
+    steteOrder = serializers.CharField(source='id_state_applic.name_state')
+
+    # Описание
+    reasonApplicOrder = serializers.CharField(source='reason_applic')
+    historyOrder = serializers.CharField(source='history_applic')
+    otherInfoOrder = serializers.CharField(source='otherInfo_applic')
+
+    # Об устройстве (исправлено source для связанных моделей)
+    typeDeviceOrder = serializers.CharField(source='id_typeDevice_applic.name_typeD')
+    manufacturerOrder = serializers.CharField(source='id_manufacturer_applic.name_manufacturer')
+    modelOrder = serializers.CharField(source='model_applic')
+
+    # Контакты
+    fioUserOrder = serializers.CharField(source='user_fio_applic')
+    telUserOrder = serializers.CharField(source='user_tel_applic')
+    emailUserOrder = serializers.CharField(source='user_email_applic')
+    adressUserOrder = serializers.CharField(source='user_adress_applic')
+
+    class Meta:
+        model = Application # Указываем модель Заказа
+        fields = [
+            'numberOrder', 'dataOrder', 'steteOrder',
+            'reasonApplicOrder', 'historyOrder', 'otherInfoOrder',
+            'typeDeviceOrder', 'manufacturerOrder', 'modelOrder',
+            'fioUserOrder', 'telUserOrder', 'emailUserOrder', 'adressUserOrder'
+        ]  # Список полей, которые будут сериализованы
+
+
+class ApplicationCreateSerializer(serializers.ModelSerializer): #Создание заказа для пользователя
     class Meta:
         model = Application  # Указываем модель, с которой работает сериализатор
         fields = [
@@ -44,7 +78,7 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
 
 
 
-class UserRegisterSerializer(serializers.ModelSerializer):
+class UserRegisterSerializer(serializers.ModelSerializer): #Регистрация  пользователя
     ## Сериализатор для регистрации пользователя
     class Meta:
         model = CustomUser #Модеель

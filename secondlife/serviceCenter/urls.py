@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView,TokenVerifyView
 from .views import UserCreateView, ManufacturerApplic, UserRegisterView, MasterListView, UserListView, \
-    ApplicationCreateView, StateApplicList, TypeDeviceList, ManufacturerList, PriceListView
+    ApplicationCreateView, StateApplicList, TypeDeviceList, ManufacturerList, PriceListView, OrderListView
 
 #Обработка адресов
 urlpatterns = [
@@ -63,8 +63,10 @@ urlpatterns = [
 
 
 
-
-
+    #Для мастера
+    #Вывод всех заказов
+    path('api/v1/master-orders/', OrderListView.as_view(), name='order-list'),
+    # http://127.0.0.1:8000/api/v1/master-orders/
 
 
 
