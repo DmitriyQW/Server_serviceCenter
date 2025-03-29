@@ -11,6 +11,17 @@ from django.db.models import Q
 # Для удаления записи в бд объекта
 
 
+class UserProfileSerializer(serializers.ModelSerializer):  #Сериализатор для данных пользователя
+    loginUser = serializers.CharField(source='username')  # Поле "loginUser" берет данные из "username" модели
+    fioUser = serializers.CharField(source='fio')
+    emailUser = serializers.CharField(source='email')
+    telUser = serializers.CharField(source='tel')
+    adressUser = serializers.CharField(source='address')
+
+    class Meta:
+        model = CustomUser # Указываем модель, с которой работает сериализатор
+        fields = ['loginUser', 'fioUser', 'emailUser', 'telUser', 'adressUser'] # Список полей для сериализации
+
 
 class OrderItemSerializer(serializers.ModelSerializer): #Сереализатор Заказов для отображения мастеру
     # Шапка

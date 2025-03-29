@@ -8,7 +8,7 @@ from .models import CustomUser, Manufacturer_applic, State_applic, TypeDevice_ap
 from .permissions import IsUserOrAdmin, IsMasterOrAdmin
 from .serializers import CustomUserSerializer, Manufacturer_applicSerializer, UserRegisterSerializer, \
     ApplicationCreateSerializer, TypeDevice_applicSerializer, State_applicSerializer, PriceListSerializer, \
-    OrderItemSerializer
+    OrderItemSerializer, UserProfileSerializer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated,AllowAny
 from rest_framework.response import Response
 
@@ -26,6 +26,20 @@ def pricelist(request):
 
 def counter(request,id_count):
     return  HttpResponse(f"<h2>Х2 counter = {id_count}</h2>")
+
+
+
+
+
+
+class UserProfileView(APIView): #Возвращаем данные пользователя по токену
+    permission_classes = [IsAuthenticated]  #Только для авторизированных пользователей
+
+    def get(self, request):
+        user = request.user #Получаем текущего пользователя из токена
+        serializer = UserProfileSerializer(user) # Сериализуем данные пользователя
+        return Response(serializer.data) # Возвращаем данные в формате JSON
+
 
 
 class OrderListView(generics.ListAPIView): #Все заявки для мастера

@@ -2,7 +2,8 @@ from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView,TokenVerifyView
 from .views import UserCreateView, ManufacturerApplic, UserRegisterView, MasterListView, UserListView, \
-    ApplicationCreateView, StateApplicList, TypeDeviceList, ManufacturerList, PriceListView, OrderListView
+    ApplicationCreateView, StateApplicList, TypeDeviceList, ManufacturerList, PriceListView, OrderListView, \
+    UserProfileView
 
 #Обработка адресов
 urlpatterns = [
@@ -54,6 +55,10 @@ urlpatterns = [
     #Создание заказа
     path('api/v1/orders/create/', ApplicationCreateView.as_view(), name='create-order'),
     # http://127.0.0.1:8000/api/v1/orders/create/
+
+    #Для вывода данных о профиле пользователя по токену
+    path('api/v1/user-profile/', UserProfileView.as_view(), name='user-profile'),
+    # http://127.0.0.1:8000/api/v1/user-profile/
 
 
     #Прайс лист
