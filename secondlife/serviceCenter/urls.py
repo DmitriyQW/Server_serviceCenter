@@ -1,9 +1,11 @@
 from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView,TokenVerifyView
+
+from .serializers import UserOrdersSerializer
 from .views import UserCreateView, ManufacturerApplic, UserRegisterView, MasterListView, UserListView, \
     ApplicationCreateView, StateApplicList, TypeDeviceList, ManufacturerList, PriceListView, OrderListView, \
-    UserProfileView
+    UserProfileView, UserOrdersView
 
 #Обработка адресов
 urlpatterns = [
@@ -60,6 +62,9 @@ urlpatterns = [
     path('api/v1/user-profile/', UserProfileView.as_view(), name='user-profile'),
     # http://127.0.0.1:8000/api/v1/user-profile/
 
+    # Возвращаем список всех заказов пользователя
+    path('api/v1/user-orders/',UserOrdersView.as_view(),name='user-orders'),
+    # http://127.0.0.1:8000/api/v1/user-orders/
 
     #Прайс лист
 

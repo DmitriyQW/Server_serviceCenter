@@ -10,6 +10,39 @@ from django.db.models import Q
 # Для изменения записи в бд содержимого полей объекта
 # Для удаления записи в бд объекта
 
+class UserOrdersSerializer(serializers.ModelSerializer): # Сереализатор для возвращения всех заказов пользователя
+    numberOrder = serializers.CharField(source='id_application') #id заказа
+    dataOrder = serializers.CharField(source='date_applic') #Дата создания
+    statusOrder = serializers.CharField(source='id_state_applic.name_state') # Статус заявки
+    fioMasterOrder = serializers.CharField(source='fiomastersamoviz_applic', allow_null=True)# Фио мастера
+    telMasterOrder = serializers.CharField(source='telmastersamoviz_applic', allow_null=True)# Телефон мастера
+    adressMasterOrder = serializers.CharField(source='adresssamoviz_applic', allow_null=True)# Адрес мастера
+    reasonApplicOrder = serializers.CharField(source='reason_applic') #Причина обращения
+    typeDeviceOrder = serializers.CharField(source='id_typeDevice_applic.name_typeD') #Тип устройства
+    manufacturerOrder = serializers.CharField(source='id_manufacturer_applic.name_manufacturer') #Производитель
+    modelOrder = serializers.CharField(source='model_applic') # Модель устройства
+    descriptionWorkMasterOrder = serializers.CharField(source='descriptionWorks_applic', allow_null=True) #Описание выполненных работ
+    descriptionPriceMasterOrder = serializers.CharField(source='verdictPrice_applic', allow_null=True)#Какая услуга сколько стоит
+    totalAmount = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)#Итоговая стоимость
+
+    class Meta:
+        model = Application #Модель
+        fields = [ #Поля для сереализации
+            'numberOrder',
+            'dataOrder',
+            'statusOrder',
+            'fioMasterOrder',
+            'telMasterOrder',
+            'adressMasterOrder',
+            'reasonApplicOrder',
+            'typeDeviceOrder',
+            'manufacturerOrder',
+            'modelOrder',
+            'descriptionWorkMasterOrder',
+            'descriptionPriceMasterOrder',
+            'totalAmount'
+        ]
+
 
 class UserProfileSerializer(serializers.ModelSerializer):  #Сериализатор для данных пользователя
     loginUser = serializers.CharField(source='username')  # Поле "loginUser" берет данные из "username" модели

@@ -95,8 +95,9 @@ class Application(models.Model):
 
 
     deviceStatus_applic = models.CharField(max_length=1000, blank=True, null=True)  # Состояние Устройства (Рабочий, Не рабочий,скол и т.п)
-    descriptionWorks_applic = models.CharField(max_length=2000, blank=True, null=True)  # Null Дефект реальный
-    verdictPrice_applic = models.CharField(max_length=2000,blank=True,null=True) #Null Стоимость работ
+    descriptionWorks_applic = models.CharField(max_length=2000, blank=True, null=True)  # Что было выполнено
+    verdictPrice_applic = models.CharField(max_length=2000,blank=True,null=True) #Null Что сколько стоит
+    totalAmount = models.DecimalField(max_digits=10, decimal_places=2, blank=True,null=True)  # Итоговая стоимость заказа
 
     # Метод для строкового представления объекта
     def __str__(self):

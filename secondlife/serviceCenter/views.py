@@ -8,7 +8,7 @@ from .models import CustomUser, Manufacturer_applic, State_applic, TypeDevice_ap
 from .permissions import IsUserOrAdmin, IsMasterOrAdmin
 from .serializers import CustomUserSerializer, Manufacturer_applicSerializer, UserRegisterSerializer, \
     ApplicationCreateSerializer, TypeDevice_applicSerializer, State_applicSerializer, PriceListSerializer, \
-    OrderItemSerializer, UserProfileSerializer
+    OrderItemSerializer, UserProfileSerializer, UserOrdersSerializer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated,AllowAny
 from rest_framework.response import Response
 
@@ -28,7 +28,14 @@ def counter(request,id_count):
     return  HttpResponse(f"<h2>Х2 counter = {id_count}</h2>")
 
 
+class UserOrdersView(APIView): #Возвращаем список заказов пользователей
+    permission_classes = [IsUserOrAdmin]  # Только для админа и пользователя
 
+    def get(self, request):
+        user = request.user  # Получаем текущего пользователя из токена
+        user_orders = Application.objects.filter(id_user_applic=user)  # Фильтруем заказы по пользователю
+        serializer = UserOrdersSerializer(user_orders, many=True)  # Сериализуем список заказов
+        return Response(serializer.data)  # Возвращаем данные в формате JSON
 
 
 
