@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .serializers import UserOrdersSerializer
 from .views import UserCreateView, ManufacturerApplic, UserRegisterView, MasterListView, UserListView, \
     ApplicationCreateView, StateApplicList, TypeDeviceList, ManufacturerList, PriceListView, OrderListView, \
-    UserProfileView, UserOrdersView
+    UserProfileView, UserOrdersView, CompleteOrderAPIView
 
 #Обработка адресов
 urlpatterns = [
@@ -79,10 +79,13 @@ urlpatterns = [
     # http://127.0.0.1:8000/api/v1/master-orders/
 
 
+    #Обновление статуса заявки для мастера
+    path('api/v1/orders/<int:order_id>/status/', views.UpdateOrderStatusAPIView.as_view(), name='update_order_status'),
+    # http://127.0.0.1:8000/api/v1/orders/1/status/
 
-
-
-
+    #Завершение заказа мастером
+    path('api/v1/orders/<int:pk>/complete/', CompleteOrderAPIView.as_view(), name='complete_order'),
+    # http://127.0.0.1:8000/api/v1/orders/1/complete/
 
 
     # Не используется

@@ -10,6 +10,45 @@ from django.db.models import Q
 # Для изменения записи в бд содержимого полей объекта
 # Для удаления записи в бд объекта
 
+
+class CompleteOrderSerializer(serializers.ModelSerializer): #Сериализация для завершения заказа
+    deviceStatus_applic = serializers.CharField() #Описания состояния устройства
+    descriptionWorks_applic = serializers.CharField() #Описания выполненных работ
+    verdictPrice_applic = serializers.CharField() #Описания стоимости выполненных работ
+    totalAmount = serializers.FloatField() #Общая стоимость
+
+    class Meta:
+        model = Application  # Модель, с которой работает сериализатор
+        fields = [ # Список полей, которые будут сериализованы
+            'deviceStatus_applic',
+            'descriptionWorks_applic',
+            'verdictPrice_applic',
+            'totalAmount',
+        ]
+
+    def update(self, instance, validated_data):
+        # Заполняем поля из профиля мастера
+        instance.id_worker_applic = self.context['request'].user  # ID мастера
+        instance.adresssamoviz_applic = self.context['request'].user.address  # Адрес мастера
+        instance.telmastersamoviz_applic = self.context['request'].user.tel  # Телефон мастера
+        instance.fiomastersamoviz_applic = self.context['request'].user.fio  # ФИО мастера
+
+        # Заполняем поля из запроса
+
+        # Обновляем описания состояния устройства
+        instance.deviceStatus_applic = validated_data.get('deviceStatus_applic', instance.deviceStatus_applic)
+        # Обновляем описания выполненных работ
+        instance.descriptionWorks_applic = validated_data.get('descriptionWorks_applic',
+                                                              instance.descriptionWorks_applic)
+        # Обновляем описания стоимости выполненных работ
+        instance.verdictPrice_applic = validated_data.get('verdictPrice_applic', instance.verdictPrice_applic)
+        # Обновляем общую стоимость
+        instance.totalAmount = validated_data.get('totalAmount', instance.totalAmount)
+
+        instance.save() # Сохраняем изменения в базе данных
+        return instance # Возвращаем обновленный экземпляр
+
+
 class UserOrdersSerializer(serializers.ModelSerializer): # Сереализатор для возвращения всех заказов пользователя
     numberOrder = serializers.CharField(source='id_application') #id заказа
     dataOrder = serializers.CharField(source='date_applic') #Дата создания

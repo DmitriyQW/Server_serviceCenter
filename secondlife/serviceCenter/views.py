@@ -3,12 +3,13 @@ from django.http import HttpResponse
 from rest_framework import generics, status
 from rest_framework.views import APIView
 
+from . import serializers
 # Импорт моделей.
 from .models import CustomUser, Manufacturer_applic, State_applic, TypeDevice_applic, PriceList, Application
 from .permissions import IsUserOrAdmin, IsMasterOrAdmin
 from .serializers import CustomUserSerializer, Manufacturer_applicSerializer, UserRegisterSerializer, \
     ApplicationCreateSerializer, TypeDevice_applicSerializer, State_applicSerializer, PriceListSerializer, \
-    OrderItemSerializer, UserProfileSerializer, UserOrdersSerializer
+    OrderItemSerializer, UserProfileSerializer, UserOrdersSerializer, CompleteOrderSerializer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated,AllowAny
 from rest_framework.response import Response
 
@@ -26,6 +27,56 @@ def pricelist(request):
 
 def counter(request,id_count):
     return  HttpResponse(f"<h2>Х2 counter = {id_count}</h2>")
+
+
+
+class CompleteOrderAPIView(generics.UpdateAPIView):
+    serializer_class = CompleteOrderSerializer # Класс сериализатора для завершения заказа
+    permission_classes = [IsMasterOrAdmin]  # Права доступа для мастера и администратора
+    queryset = Application.objects.all()  # Все заявки
+
+    def get_object(self):  # Получение объекта заявки по ID
+        order_id = self.kwargs['pk']
+        try:
+            return Application.objects.get(pk=order_id) # Попытка получить заявку по ID
+        except Application.DoesNotExist: # Если заявка не найдена, вызываем ошибку валидации
+            raise serializers.ValidationError("Заказ не найден.")
+
+    # Обновление заявки
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()  # Получаем объект заявки
+        serializer = self.get_serializer(instance, data=request.data, context={'request': request})  # Создаем сериализатор с передачей контекста запроса
+        serializer.is_valid(raise_exception=True) # Проверяем валидность данных
+        serializer.save() # Сохраняем изменения
+
+        return Response(serializer.data)  # Возвращаем ответ с обновленными данными
+
+
+
+
+class UpdateOrderStatusAPIView(APIView): #API для обновления статуса заявки
+    permission_classes = [IsMasterOrAdmin] #Разрешение только для мастер и админа
+
+    def patch(self, request, order_id): #Функция обновления принимает запрос и id заказа
+        try:
+            order = Application.objects.get(pk=order_id) #Получаем заказ по id
+            new_status_id = request.data.get('status_id') #Получаем id статуса из запроса
+
+            if not new_status_id: #Если статус не указан
+                return Response({'error': 'status_id required'}, status=status.HTTP_400_BAD_REQUEST) #Возвращаем ошибку
+
+            new_status = State_applic.objects.get(pk=new_status_id) #Получаем статус по id
+            order.id_state_applic = new_status #Обновляем статус
+            order.save() #Сохраняем изменения
+
+            return Response({'message': 'Status updated'}) #Возвращаем сообщение об успехе
+        except Application.DoesNotExist: #Если заказ не найден
+            return Response({'error': 'Заказ не найден'}, status=status.HTTP_404_NOT_FOUND) #Возвращаем ошибку
+        except State_applic.DoesNotExist: #Если статус не найден
+            return Response({'error': 'Статус не найден'}, status=status.HTTP_400_BAD_REQUEST) #Возвращаем ошибку
+        except Exception as e: #Если произошла другая ошибка
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST) #Возвращаем ошибку
+
 
 
 class UserOrdersView(APIView): #Возвращаем список заказов пользователей
