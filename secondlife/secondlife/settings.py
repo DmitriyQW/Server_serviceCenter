@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 from  datetime import timedelta
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,19 @@ SECRET_KEY = 'django-insecure-p(%(a1g&j6hwy740m#!-wf^w!=xg)t2&w$cu2l7tizys-(rn6$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# DEBUG = False
+
 # ALLOWED_HOSTS = ['varavkf7.beget.tech']
 ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1']
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'serviceCenter', 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Application definition
@@ -88,6 +100,16 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql', #Тип субд
+#         'NAME':'varavkf7_django',
+#         'USER':'varavkf7_django',
+#         'PASSWORD':'jV#Bsi2D',
+#         'HOST':'localhost',
+#         'PORT':'3306',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
