@@ -25,6 +25,7 @@ SECRET_KEY = 'django-insecure-p(%(a1g&j6hwy740m#!-wf^w!=xg)t2&w$cu2l7tizys-(rn6$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# ALLOWED_HOSTS = ['varavkf7.beget.tech']
 ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1']
 
 
@@ -149,7 +150,7 @@ AUTH_USER_MODEL = 'serviceCenter.CustomUser'
 
 # Настройки Simple JWT
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=2), #Вернуть обратно на 30
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30), 
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
