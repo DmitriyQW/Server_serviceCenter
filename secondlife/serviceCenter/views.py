@@ -9,7 +9,8 @@ from .models import CustomUser, Manufacturer_applic, State_applic, TypeDevice_ap
 from .permissions import IsUserOrAdmin, IsMasterOrAdmin
 from .serializers import CustomUserSerializer, Manufacturer_applicSerializer, UserRegisterSerializer, \
     ApplicationCreateSerializer, TypeDevice_applicSerializer, State_applicSerializer, PriceListSerializer, \
-    OrderItemSerializer, UserProfileSerializer, UserOrdersSerializer, CompleteOrderSerializer
+    OrderItemSerializer, UserProfileSerializer, UserOrdersSerializer, CompleteOrderSerializer, \
+    PasswordResetByQuestionSerializer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated,AllowAny
 from rest_framework.response import Response
 
@@ -28,7 +29,28 @@ def pricelist(request):
 def counter(request,id_count):
     return  HttpResponse(f"<h2>Х2 counter = {id_count}</h2>")
 
+class PasswordResetByQuestionView(APIView):
+    permission_classes = [AllowAny] #Для всех пользователей
 
+    def post(self, request):
+        stage = request.data.get('stage') # Стадия процесса из тела запроса
+        serializer = PasswordResetByQuestionSerializer(data=request.data, context={'stage': stage})  #Сериализатор с передачей стадии  процесса
+
+        # Проверка наличия стадии
+        if not stage:
+            return Response({'detail': 'Не указана стадия запроса.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Валидация данных
+        if serializer.is_valid():
+            # Логика для разных стадий
+            if stage == 'get_question': #Получение контрольного вопроса
+                return Response({'question': serializer.validated_data['question']}, status=status.HTTP_200_OK)
+            elif stage == 'check_answer': #Проверка контрольного ответа
+                return Response({'detail': 'Ответ верный. Теперь отправьте новый пароль.'}, status=status.HTTP_200_OK)
+            elif stage == 'set_password': #Смена пароля
+                serializer.save()
+                return Response({'detail': 'Пароль успешно изменён.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Возврат ошибок валидации
 
 class CompleteOrderAPIView(generics.UpdateAPIView):
     serializer_class = CompleteOrderSerializer # Класс сериализатора для завершения заказа

@@ -11,6 +11,58 @@ from django.db.models import Q
 # Для удаления записи в бд объекта
 
 
+class PasswordResetByQuestionSerializer(serializers.Serializer):
+    username = serializers.CharField(required=False) #Имя пользователя не обязательно
+    answer = serializers.CharField(required=False) #Ответ на вопрос не обязательно
+    new_password = serializers.CharField(required=False, min_length=8) #Новый пароль не обязательно минимальная длина 8
+
+    def validate(self, data):
+        stage = self.context.get('stage') # Текущая стадия
+        username = data.get('username') # Получаем имя пользователя
+
+        if stage == 'get_question': # Если получаем контрольный вопрос
+            if not username: #Если не было имя пользователя
+                raise serializers.ValidationError("Укажите username.")
+            try:
+                user = CustomUser.objects.get(username=username) #Ищем пользователя в бд
+            except CustomUser.DoesNotExist: #Если не найден пользователь
+                raise serializers.ValidationError("Пользователь не найден.")
+            data['question'] = user.question # Добавляем вопрос в данные
+            return data # Возвращаем данные
+
+        elif stage == 'check_answer': #Стадия проверка ответа
+            if not username or not data.get('answer'): #Если не указан пароль или ответ на вопрос
+                raise serializers.ValidationError("Укажите username и ответ.")
+            try: #Пробуем найти пользователя
+                user = CustomUser.objects.get(username=username)
+            except CustomUser.DoesNotExist: #Пользователь не найден
+                raise serializers.ValidationError("Пользователь не найден.")
+            if not user.check_answer(data['answer']): #Не верный ответ
+                raise serializers.ValidationError("Неверный ответ на контрольный вопрос.")
+            return data
+
+        elif stage == 'set_password': #Стадия смены пароля
+            if not username or not data.get('answer') or not data.get('new_password'): #Если что либо не передано username,ответ,новый,пароль
+                raise serializers.ValidationError("Укажите username, ответ и новый пароль.")
+            try: #Поиск пользователя
+                user = CustomUser.objects.get(username=username)
+            except CustomUser.DoesNotExist:
+                raise serializers.ValidationError("Пользователь не найден.")
+            if not user.check_answer(data['answer']):#Проверка контрольного ответа
+                raise serializers.ValidationError("Неверный ответ на контрольный вопрос.")
+            data['user'] = user
+            return data
+
+        else: #Если не передана стадия
+            raise serializers.ValidationError("Неизвестная стадия запроса.")
+
+    def save(self):
+        user = self.validated_data['user']  # Получаем пользователя
+        user.set_password(self.validated_data['new_password'])  # Меняем на новый пароль
+        user.save() #Сохраняем пользователя
+        return user
+
+
 class CompleteOrderSerializer(serializers.ModelSerializer): #Сериализация для завершения заказа
     deviceStatus_applic = serializers.CharField() #Описания состояния устройства
     descriptionWorks_applic = serializers.CharField() #Описания выполненных работ

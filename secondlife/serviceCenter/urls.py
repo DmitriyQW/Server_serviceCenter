@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .serializers import UserOrdersSerializer
 from .views import UserCreateView, ManufacturerApplic, UserRegisterView, MasterListView, UserListView, \
     ApplicationCreateView, StateApplicList, TypeDeviceList, ManufacturerList, PriceListView, OrderListView, \
-    UserProfileView, UserOrdersView, CompleteOrderAPIView
+    UserProfileView, UserOrdersView, CompleteOrderAPIView, PasswordResetByQuestionView
 
 #Обработка адресов
 urlpatterns = [
@@ -15,6 +15,10 @@ urlpatterns = [
 
 
     #api
+
+    # Сброс пароля
+    path('api/v1/recovery-password/', PasswordResetByQuestionView.as_view(), name='recovery-password'),
+    # http://127.0.0.1:8000/api/v1/recovery-password/
 
     #Регистрация нового пользователя
     path('api/v1/users-register-2/', UserRegisterView.as_view(), name='user-register'), ####
