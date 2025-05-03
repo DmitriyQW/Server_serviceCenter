@@ -213,20 +213,33 @@ class ApplicationCreateSerializer(serializers.ModelSerializer): #Создани�
 
 
 
-class UserRegisterSerializer(serializers.ModelSerializer): #Регистрация  пользователя
+class UserRegisterSerializer(serializers.ModelSerializer):
     ## Сериализатор для регистрации пользователя
     class Meta:
-        model = CustomUser #Модеель
+        model = CustomUser  # Модель
         fields = ['username', 'tel', 'email', 'password', 'question', 'answer', 'fio', 'address', 'age']
-        # Поля для сереализации
-        extra_kwargs = {'password': {'write_only': True}, 'answer': {'write_only': True}}
-        # Задание определённых свойств
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'answer': {'write_only': True}
+        }
+
+    def validate(self, attrs): # Проверка что телефон или логин не заняты
+        username = attrs.get('username')
+        tel = attrs.get('tel')
+
+        if CustomUser.objects.filter(username=username).exists():
+            raise serializers.ValidationError({'username': 'Данный username уже занят.'})
+
+        if CustomUser.objects.filter(tel=tel).exists():
+            raise serializers.ValidationError({'tel': 'Данный номер телефона уже занят.'})
+
+        return attrs
 
     def create(self, validated_data):
         validated_data['user_type'] = 'user'  # Установите тип пользователя на "user"
         validated_data['password'] = make_password(validated_data['password'])  # Хеширование пароля
-        validated_data['answer'] = make_password(validated_data['answer']) # Хеширование ответа на вопрос
-        return super().create(validated_data) # Создание нового пользователя
+        validated_data['answer'] = make_password(validated_data['answer'])  # Хеширование ответа на вопрос
+        return super().create(validated_data)
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
