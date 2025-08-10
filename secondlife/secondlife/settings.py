@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+from dotenv import load_dotenv
 from  datetime import timedelta
 from pathlib import Path
 import os
@@ -24,21 +25,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-p(%(a1g&j6hwy740m#!-wf^w!=xg)t2&w$cu2l7tizys-(rn6$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = True
+
 DEBUG = True
 
-# DEBUG = False
-
-# ALLOWED_HOSTS = ['varavkf7.beget.tech']
+# ALLOWED_HOSTS = ['сц-вторая-жизнь.рф','xn-----7kchwgg5bduho3czftb.xn--p1ai','www.xn-----7kchwgg5bduho3czftb.xn--p1ai']
 ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1']
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'serviceCenter', 'static'),
-]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'serviceCenter', 'static'),
+# ]
+
 
 
 # Application definition

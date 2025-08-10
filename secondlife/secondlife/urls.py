@@ -26,3 +26,8 @@ urlpatterns = [
     #http://127.0.0.1:8000/secondlife/pricelist/
     #Главная страница сервисного центра
 ]
+
+
+admin.site.site_header = "Сервисный центр Вторая жизнь"
+admin.site.site_title = "Сервисный центр Вторая жизнь"
+admin.site.index_title = "Администрирование"
